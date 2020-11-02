@@ -325,7 +325,12 @@ void *process_request(void *fd)
                     bzero(buf, 1024);
                     while (get_line(&proxy_des_sock, buf, 1024, 0) > 0)
                     {
+#ifdef _DEBUG
+                        printf("*** Receive: %s", buf);
+#endif
+                        send(*client_fd, &buf, strlen(buf), 0);
                         int chunked_size = htoi(buf);
+                        bzero(buf, 1024);
 #ifdef _DEBUG
                         printf("*** Chunked Size: %d\n", chunked_size);
 #endif
@@ -426,7 +431,7 @@ int main(int argc, char const *argv[])
             perror("accept");
             exit(-1);
         }
-        
+
         process_request(&client_fd);
     }
 
